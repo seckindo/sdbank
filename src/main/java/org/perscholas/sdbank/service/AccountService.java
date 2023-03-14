@@ -37,13 +37,12 @@ public class AccountService {
     }
 
     public Accounts createOrUpdate(Accounts accounts) {
-        if (accountsRepoI.findByAccountNum(accounts.getAccountNum()).isPresent()) {
-            Accounts original = accountsRepoI.findByAccountNum(accounts.getAccountNum()).get();
+        if (accountsRepoI.findById(accounts.getId()).isPresent()) {
+            Accounts original = accountsRepoI.findById(accounts.getId()).get();
             original.setRouting(accounts.getRouting());
             original.setAccountNum(accounts.getAccountNum());
             original.setBalance(accounts.getBalance());
-            original.setCustomer(accounts.getCustomer());
-
+            original.setCustomer(customersRepoI.findById(accounts.getCustomer().getId()).get());
             return accountsRepoI.save(original);
         } else {
             Accounts newacc = new Accounts();

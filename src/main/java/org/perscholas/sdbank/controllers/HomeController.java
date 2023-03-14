@@ -125,8 +125,21 @@ public class HomeController {
 
     @PostMapping("accountprocess")
     public String accountProcess(@ModelAttribute("account") Accounts accounts) {
-        accountService.createOrUpdate(accounts);
-        return "redirect:/accounts";
+        if (accounts.getCustomer().getId() != null) {
+            Customers c = accounts.getCustomer();
+            c.addAccount(accounts);
+            c = customerService.createOrUpdate(c);
+            return "redirect:/accounts";
+        } else {
+            log.warn(accounts.getCustomer().getId().toString());
+            Accounts a = accountsRepoI.findById(accounts.getId()).get();
+            a.setCustomer(customersRepoI.findById(accounts.getCustomer().getId()).get());
+            a = accountService.createOrUpdate(accounts);
+            log.warn(a.toString());
+            return "redirect:/accounts";
+        }
+
+
     }
 
     @PostMapping("depositprocess")
